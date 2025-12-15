@@ -1,0 +1,39 @@
+# =====================================
+#   HLS STREAMING + CORS + EMBED FIX
+#   (VIDEO .TS + MANIFEST .M3U8 + SUBTITLE .VTT)
+# =====================================
+
+# ---- MIME TYPES (WAJIB HLS / VTT) ----
+<IfModule mod_mime.c>
+    AddType application/vnd.apple.mpegurl .m3u8
+    AddType application/x-mpegurl .m3u8
+    AddType video/mp2t .ts
+    AddType text/vtt .vtt
+</IfModule>
+
+# ---- HAPUS HEADER YANG MEMBLOK EMBED ----
+<IfModule mod_headers.c>
+    Header always unset X-Frame-Options
+    Header always unset Content-Security-Policy
+</IfModule>
+
+# ---- IJINKAN IFRAME DARI MANAPUN (BEBAS DI-EMBED) ----
+<IfModule mod_headers.c>
+    Header always set Content-Security-Policy "frame-ancestors *"
+</IfModule>
+
+# ---- FIX CORS UNTUK PLAYER + SEGMENT + SUBTITLE ----
+<IfModule mod_headers.c>
+    Header always set Access-Control-Allow-Origin "*"
+    Header always set Access-Control-Allow-Methods "GET, OPTIONS"
+    Header always set Access-Control-Allow-Headers "Range, Origin, Content-Type, Accept"
+    Header always set Access-Control-Expose-Headers "Content-Length, Content-Range, Accept-Ranges"
+</IfModule>
+
+# ---- CACHE (OPSIONAL) ----
+<IfModule mod_expires.c>
+    ExpiresActive On
+    ExpiresByType application/vnd.apple.mpegurl "access plus 1 minutes"
+    ExpiresByType video/mp2t "access plus 7 days"
+    ExpiresByType text/vtt "access plus 1 minutes"
+</IfModule>
